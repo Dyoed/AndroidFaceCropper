@@ -25,7 +25,6 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PointF;
-import android.graphics.Rect;
 import android.media.FaceDetector;
 import android.util.Log;
 
@@ -41,6 +40,7 @@ public class FaceCropper {
 
     private static final int MAX_FACES = 8;
     private static final int MIN_FACE_SIZE = 200;
+    private static final int MIN_FACE_DIAMETER = 110;
 
     private int mFaceMinSize = MIN_FACE_SIZE;
     private int mFaceMarginPx = 100;
@@ -157,9 +157,15 @@ public class FaceCropper {
         Canvas canvas = new Canvas(mutableBitmap);
         canvas.drawBitmap(mutableBitmap, new Matrix(), null);
 
+        int processedFaceCount = 0;
+
         // Calculates minimum box to fit all detected faces
         for (int i = 0; i < faceCount; i++) {
             FaceDetector.Face face = faces[i];
+
+            if((face.eyesDistance() * 1.5f*2) < MIN_FACE_DIAMETER){
+                continue;
+            }
 
             // Eyes distance * 3 usually fits an entire face
             int faceSize = (int) (face.eyesDistance() * 3);
@@ -178,6 +184,7 @@ public class FaceCropper {
             if (debug) {
                 canvas.drawPoint(centerFace.x, centerFace.y, mDebugPainter);
                 canvas.drawCircle(centerFace.x, centerFace.y, face.eyesDistance() * 1.5f, mDebugPainter);
+
             }
 
             int tInitX = (int) (centerFace.x - faceSize / 2);
@@ -194,6 +201,11 @@ public class FaceCropper {
             initY = Math.min(initY, tInitY);
             endX = Math.max(endX, tEndX);
             endY = Math.max(endY, tEndY);
+            processedFaceCount++;
+        }
+
+        if(processedFaceCount == 0){
+            return new CropResult(mutableBitmap);
         }
 
         int sizeX = endX - initX;

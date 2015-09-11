@@ -102,23 +102,25 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
+        mFaceCropper.setEyeDistanceFactorMargin(20);
+
         SeekBar seekBar = (SeekBar) findViewById(R.id.seekBar);
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                mFaceCropper.setEyeDistanceFactorMargin((float) i / 10);
-                adapter.updateView(mViewPager.getCurrentItem());
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-            }
-        });
-        seekBar.setProgress(10);
+//        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+//            @Override
+//            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+//                mFaceCropper.setEyeDistanceFactorMargin((float) i / 10);
+//                adapter.updateView(mViewPager.getCurrentItem());
+//            }
+//
+//            @Override
+//            public void onStartTrackingTouch(SeekBar seekBar) {
+//            }
+//
+//            @Override
+//            public void onStopTrackingTouch(SeekBar seekBar) {
+//            }
+//        });
+//        seekBar.setProgress(10);
     }
 
     class ImageAdapter extends PagerAdapter {
