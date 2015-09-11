@@ -38,7 +38,7 @@ public class BitmapUtils {
 
         Bitmap fixedBitmap = original;
         if (width != original.getWidth() || height != original.getHeight()) {
-            fixedBitmap = Bitmap.createScaledBitmap(original, width, height, false);
+            fixedBitmap = Bitmap.createScaledBitmap(original, width+300, height+10, false);
         }
 
         if (fixedBitmap != original) {

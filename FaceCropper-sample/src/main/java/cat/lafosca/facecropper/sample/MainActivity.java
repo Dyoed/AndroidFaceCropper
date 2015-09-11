@@ -102,7 +102,7 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
-        mFaceCropper.setEyeDistanceFactorMargin(20);
+        mFaceCropper.setEyeDistanceFactorMargin(100);
 
         SeekBar seekBar = (SeekBar) findViewById(R.id.seekBar);
 //        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -126,8 +126,8 @@ public class MainActivity extends ActionBarActivity {
     class ImageAdapter extends PagerAdapter {
 
         private int[] urls = new int[] {
-                R.drawable.lluis1,
-                R.drawable.vueling,
+                R.drawable.test1,
+                R.drawable.test2,
                 R.drawable.arol1,
                 R.drawable.git1,
                 R.drawable.git2

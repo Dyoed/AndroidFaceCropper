@@ -25,6 +25,7 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PointF;
+import android.graphics.RectF;
 import android.media.FaceDetector;
 import android.util.Log;
 
@@ -199,6 +200,7 @@ public class FaceCropper {
 
             initX = Math.min(initX, tInitX);
             initY = Math.min(initY, tInitY);
+            Log.d(LOG_TAG, "initX:"+initX+"initY:"+initY);
             endX = Math.max(endX, tEndX);
             endY = Math.max(endY, tEndY);
             processedFaceCount++;
@@ -264,6 +266,39 @@ public class FaceCropper {
         return getCroppedImage(BitmapFactory.decodeResource(ctx.getResources(), resDrawable, bitmapOptions));
     }
 
+    public Bitmap scaleCenterCrop(Bitmap source, int newHeight, int newWidth) {
+        int sourceWidth = source.getWidth();
+        int sourceHeight = source.getHeight();
+
+        // Compute the scaling factors to fit the new height and width, respectively.
+        // To cover the final image, the final scaling will be the bigger
+        // of these two.
+        float xScale = (float) newWidth / sourceWidth;
+        float yScale = (float) newHeight / sourceHeight;
+        float scale = Math.max(xScale, yScale);
+
+        // Now get the size of the source bitmap when scaled
+        float scaledWidth = scale * sourceWidth;
+        float scaledHeight = scale * sourceHeight;
+
+        // Let's find out the upper left coordinates if the scaled bitmap
+        // should be centered in the new size give by the parameters
+        float left = (newWidth - scaledWidth) / 2;
+        float top = (newHeight - scaledHeight) / 2;
+
+        // The target rectangle for the new, scaled version of the source bitmap will now
+        // be
+        RectF targetRect = new RectF(left, top, left + scaledWidth, top + scaledHeight);
+
+        // Finally, we create a new bitmap of the specified size and draw our new,
+        // scaled bitmap onto it.
+        Bitmap dest = Bitmap.createBitmap(newWidth, newHeight, source.getConfig());
+        Canvas canvas = new Canvas(dest);
+        canvas.drawBitmap(source, null, targetRect, null);
+
+        return dest;
+    }
+
     public Bitmap getCroppedImage(Bitmap bitmap) {
         CropResult result = cropFace(bitmap, mDebug);
         Bitmap croppedBitmap = Bitmap.createBitmap(result.getBitmap(),
@@ -276,18 +311,32 @@ public class FaceCropper {
             result.getBitmap().recycle();
         }
 
-        return croppedBitmap;
+        Log.d(LOG_TAG, String.valueOf(Math.abs(croppedBitmap.getWidth()-croppedBitmap.getHeight())));
+        int diff = Math.abs(croppedBitmap.getWidth()-croppedBitmap.getHeight());
+        int newWidth = diff < 300 ? croppedBitmap.getWidth()+(diff*5) : croppedBitmap.getWidth();
+        int newHeight = diff < 300 ? croppedBitmap.getHeight()+(diff*1) : croppedBitmap.getHeight();
+
+        if(result.hasFace){
+            return scaleCenterCrop(croppedBitmap, newWidth, newHeight);
+        }
+        else{
+            return scaleCenterCrop(croppedBitmap, newWidth, newHeight);
+        }
+
+
     }
 
     protected class CropResult {
         Bitmap mBitmap;
         Point mInit;
         Point mEnd;
+        private boolean hasFace = false;
 
         public CropResult(Bitmap bitmap, Point init, Point end) {
             mBitmap = bitmap;
             mInit = init;
             mEnd = end;
+            hasFace = true;
         }
 
         public CropResult(Bitmap bitmap) {
