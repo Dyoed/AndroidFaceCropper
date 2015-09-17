@@ -26,6 +26,7 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.media.FaceDetector;
 import android.util.Log;
 
@@ -157,6 +158,8 @@ public class FaceCropper {
         Canvas canvas = new Canvas(mutableBitmap);
         canvas.drawBitmap(mutableBitmap, new Matrix(), null);
 
+        int avgFaceDiameter = 0;
+
         // Calculates minimum box to fit all detected faces
         for (int i = 0; i < faceCount; i++) {
             FaceDetector.Face face = faces[i];
@@ -172,6 +175,9 @@ public class FaceCropper {
             }
 
             faceSize = Math.max(faceSize, mFaceMinSize);
+
+            avgFaceDiameter+=face.eyesDistance()*3;
+            Log.d("","Face diameter:"+face.eyesDistance()*3);
 
             face.getMidPoint(centerFace);
 
@@ -196,6 +202,8 @@ public class FaceCropper {
             endY = Math.max(endY, tEndY);
         }
 
+
+
         int sizeX = endX - initX;
         int sizeY = endY - initY;
 
@@ -209,7 +217,9 @@ public class FaceCropper {
         Point init = new Point(initX, initY);
         Point end = new Point(initX + sizeX, initY + sizeY);
 
-        return new CropResult(mutableBitmap, init, end);
+        CropResult cropResult =  new CropResult(mutableBitmap, init, end);
+        cropResult.setAvgFaceDiameter(avgFaceDiameter/faceCount);
+        return cropResult;
     }
 
     @Deprecated
@@ -264,13 +274,27 @@ public class FaceCropper {
             result.getBitmap().recycle();
         }
 
+        if(result.getAvgFaceDiameter() > 280){
+            croppedBitmap = Bitmap.createScaledBitmap(croppedBitmap, 450, 380, false);
+        }
+
         return croppedBitmap;
     }
+
 
     protected class CropResult {
         Bitmap mBitmap;
         Point mInit;
         Point mEnd;
+        int mAvgFaceDiameter;
+
+        public int getAvgFaceDiameter() {
+            return mAvgFaceDiameter;
+        }
+
+        public void setAvgFaceDiameter(int avgFaceDiameter) {
+            mAvgFaceDiameter = avgFaceDiameter;
+        }
 
         public CropResult(Bitmap bitmap, Point init, Point end) {
             mBitmap = bitmap;

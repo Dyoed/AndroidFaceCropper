@@ -57,6 +57,7 @@ public class BitmapUtils {
             paint.setColor(Color.BLACK);
             canvas.drawBitmap(original, 0, 0, paint);
 
+
             if (convertedBitmap != original) {
                 original.recycle();
             }

@@ -7,8 +7,7 @@
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="250dp"
         android:scaleType="fitCenter"
         android:fitsSystemWindows="true"
         android:gravity="center"/>
@@ -19,12 +18,12 @@
         />
 
     <ImageView
+        android:layout_gravity="center"
         android:id="@+id/imageViewCropped"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:scaleType="fitCenter"
+        android:layout_width="330dp"
         android:fitsSystemWindows="true"
+        android:scaleType="centerInside"
+        android:layout_height="170dp"
         android:gravity="center"/>
 
 </LinearLayout>
