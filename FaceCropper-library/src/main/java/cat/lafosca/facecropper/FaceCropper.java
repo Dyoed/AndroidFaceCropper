@@ -38,7 +38,9 @@ public class FaceCropper {
 
     private static final String LOG_TAG = FaceCropper.class.getSimpleName();
 
-    public enum SizeMode { FaceMarginPx, EyeDistanceFactorMargin };
+    public enum SizeMode {FaceMarginPx, EyeDistanceFactorMargin}
+
+    ;
 
     private static final int MAX_FACES = 8;
     private static final int MIN_FACE_SIZE = 200;
@@ -169,17 +171,17 @@ public class FaceCropper {
 
             if (SizeMode.FaceMarginPx.equals(mSizeMode)) {
                 faceSize += mFaceMarginPx * 2; // *2 for top and down/right and left effect
-            }
-            else if (SizeMode.EyeDistanceFactorMargin.equals(mSizeMode)) {
+            } else if (SizeMode.EyeDistanceFactorMargin.equals(mSizeMode)) {
                 faceSize += face.eyesDistance() * mEyeDistanceFactorMargin;
             }
 
             faceSize = Math.max(faceSize, mFaceMinSize);
 
-            avgFaceDiameter+=face.eyesDistance()*3;
-            Log.d("","Face diameter:"+face.eyesDistance()*3);
+            avgFaceDiameter += face.eyesDistance() * 3;
+            Log.d("", "Face diameter:" + face.eyesDistance() * 3);
 
             face.getMidPoint(centerFace);
+
 
             if (debug) {
                 canvas.drawPoint(centerFace.x, centerFace.y, mDebugPainter);
@@ -203,7 +205,6 @@ public class FaceCropper {
         }
 
 
-
         int sizeX = endX - initX;
         int sizeY = endY - initY;
 
@@ -217,8 +218,32 @@ public class FaceCropper {
         Point init = new Point(initX, initY);
         Point end = new Point(initX + sizeX, initY + sizeY);
 
-        CropResult cropResult =  new CropResult(mutableBitmap, init, end);
-        cropResult.setAvgFaceDiameter(avgFaceDiameter/faceCount);
+        int faceRadius = avgFaceDiameter / 2;
+        Log.d("", "Top to center:" + (centerFace.y - faceRadius) + " Center to bottom:" + (end.y - centerFace.y - faceRadius));
+
+        int additionalSpace = 400;
+
+        if ((mutableBitmap.getHeight() - (end.y - init.y)) > 300 && (mutableBitmap.getWidth() - (end.x - init.x)) > 300){
+            init.x-=additionalSpace;
+            init.y-=additionalSpace;
+            end.y+=additionalSpace;
+            end.x+=additionalSpace;
+            init.x = init.x < 0 ? 0 : init.x;
+            init.y = init.y < 0 ? 0 : init.y;
+            end.x = end.x > mutableBitmap.getWidth() ? mutableBitmap.getWidth()  : end.x;
+            end.y = end.y > mutableBitmap.getHeight() ? mutableBitmap.getHeight() : end.y;
+        }
+
+            Log.d("", "Image Height:" + mutableBitmap.getHeight() + " Green height:" + (end.y - init.y) +
+                    " Image width:" + mutableBitmap.getWidth() + " Green width:" + (end.x - init.x));
+
+        if (Math.abs((centerFace.y - faceRadius) - (end.y - centerFace.y - faceRadius)) > 250) {
+            end.y -= 120;
+        }
+
+
+        CropResult cropResult = new CropResult(mutableBitmap, init, end);
+        cropResult.setAvgFaceDiameter(avgFaceDiameter / faceCount);
         return cropResult;
     }
 
@@ -264,19 +289,21 @@ public class FaceCropper {
 
     public Bitmap getCroppedImage(Bitmap bitmap) {
         CropResult result = cropFace(bitmap, mDebug);
+        Log.d("", "Original " + result.getBitmap().getHeight() + "x" + result.getBitmap().getWidth());
         Bitmap croppedBitmap = Bitmap.createBitmap(result.getBitmap(),
                 result.getInit().x,
                 result.getInit().y,
-                result.getEnd().x - result.getInit().x,
+                (result.getEnd().x - result.getInit().x),
                 result.getEnd().y - result.getInit().y);
 
         if (result.getBitmap() != croppedBitmap) {
             result.getBitmap().recycle();
         }
 
-        if(result.getAvgFaceDiameter() > 280){
-            croppedBitmap = Bitmap.createScaledBitmap(croppedBitmap, 450, 380, false);
-        }
+
+//        if(result.getAvgFaceDiameter() > 280){
+//            croppedBitmap = Bitmap.createScaledBitmap(croppedBitmap, 450, 380, false);
+//        }
 
         return croppedBitmap;
     }

@@ -22,8 +22,8 @@
         android:id="@+id/imageViewCropped"
         android:layout_width="330dp"
         android:fitsSystemWindows="true"
-        android:scaleType="centerInside"
-        android:layout_height="170dp"
+        android:scaleType="centerCrop"
+        android:layout_height="180dp"
         android:gravity="center"/>
 
 </LinearLayout>
