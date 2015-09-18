@@ -21,6 +21,14 @@ public class MainActivity extends ActionBarActivity {
     private String[] sampleImages =
 
             {
+                    "http://assets4.introme.com/volo_photo/static/images/uploads/profile/768x1152/fb_a93f8aaf02dd51066a370829220daa41b652148afda72dc7f19cdf7f.jpeg",
+                    "http://assets4.introme.com/volo_photo/static/images/uploads/profile/768x768/b03c35d2331a44da7ec88703bd74c06ed1e33c54048569d51060a2d0.jpeg",
+                    "http://assets1.introme.com/volo_photo/static/images/uploads/profile/768x1362/6f2d5a878f65685ddf2dc4e00d1d980cc933fbd03afa14e035c1e288.jpeg",
+                    "http://assets2.introme.com/volo_photo/static/images/uploads/profile/768x768/4f7c6bde31c22a359d700c9afebbb4af4ff3f71545ada204a967dbc0.jpeg",
+                    "http://assets1.introme.com/volo_photo/static/images/uploads/profile/768x768/d38eb14bd18ad3beb57870cd658439eaed0459085569d946283e2ca3.jpeg",
+                    "http://assets1.introme.com/volo_photo/static/images/uploads/profile/768x1362/6f2d5a878f65685ddf2dc4e00d1d980cc933fbd03afa14e035c1e288.jpeg",
+                    "http://assets2.introme.com/volo_photo/static/images/uploads/profile/768x768/6f1717c57d8d10459356fe0b720fef7bc8a36fa04cba00c2f3cc1320.jpeg",
+                    "http://assets2.introme.com/volo_photo/static/images/uploads/profile/768x768/fb_6f3dd32d461b9373236b27871b5098b5018b1d65c521058514402856.jpeg",
                     "http://assets3.introme.com/volo_photo/static/images/uploads/profile/768x767/762bc813e8ad1723e297ceefa6b48d93ba3ba63c2a2b3738a3637a21.jpeg",
                     "http://assets4.introme.com/volo_photo/static/images/uploads/profile/768x768/e2263220161f752ee27c8359e99a6de0872c51cb882acb6a95983a26.jpeg",
                     "http://assets2.introme.com/volo_photo/static/images/uploads/profile/768x768/210f520f46020bdf6e4628c1a45ab154834ec393b7da1e2ded049cc1.jpeg",
@@ -179,7 +187,7 @@ public class MainActivity extends ActionBarActivity {
             ImageView image = (ImageView) v.findViewById(R.id.imageView);
             ImageView imageCropped = (ImageView) v.findViewById(R.id.imageViewCropped);
 
-            Log.d("","ImageView height:"+imageCropped.getHeight()+" Width:"+imageCropped.getWidth());
+            Log.d("", "ImageView height:" + imageCropped.getHeight() + " Width:" + imageCropped.getWidth());
 
             mPicasso.load(sampleImages[position]).transform(mDebugCropTransformation).into(image);
 

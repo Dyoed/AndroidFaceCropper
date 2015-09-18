@@ -161,6 +161,7 @@ public class FaceCropper {
         canvas.drawBitmap(mutableBitmap, new Matrix(), null);
 
         int avgFaceDiameter = 0;
+        int lastFaceSize = 0;
 
         // Calculates minimum box to fit all detected faces
         for (int i = 0; i < faceCount; i++) {
@@ -168,7 +169,13 @@ public class FaceCropper {
 
             // Eyes distance * 3 usually fits an entire face
             int faceSize = (int) (face.eyesDistance() * 3);
+            Log.d("Confidence",face.confidence()+"");
+            if((faceSize < 120 && face.confidence() <=0.5071299f) || (lastFaceSize > faceSize)){
+                faceCount--;
+                continue;
+            }
 
+            lastFaceSize = faceSize;
             if (SizeMode.FaceMarginPx.equals(mSizeMode)) {
                 faceSize += mFaceMarginPx * 2; // *2 for top and down/right and left effect
             } else if (SizeMode.EyeDistanceFactorMargin.equals(mSizeMode)) {
@@ -177,7 +184,7 @@ public class FaceCropper {
 
             faceSize = Math.max(faceSize, mFaceMinSize);
 
-            avgFaceDiameter += face.eyesDistance() * 3;
+            avgFaceDiameter += (face.eyesDistance() * 3);
             Log.d("", "Face diameter:" + face.eyesDistance() * 3);
 
             face.getMidPoint(centerFace);
@@ -218,7 +225,7 @@ public class FaceCropper {
         Point init = new Point(initX, initY);
         Point end = new Point(initX + sizeX, initY + sizeY);
 
-        int faceRadius = avgFaceDiameter / 2;
+        int faceRadius = avgFaceDiameter / faceCount;
         Log.d("", "Top to center:" + (centerFace.y - faceRadius) + " Center to bottom:" + (end.y - centerFace.y - faceRadius));
 
         int additionalSpace = 400;
@@ -236,9 +243,9 @@ public class FaceCropper {
 
             Log.d("", "Image Height:" + mutableBitmap.getHeight() + " Green height:" + (end.y - init.y) +
                     " Image width:" + mutableBitmap.getWidth() + " Green width:" + (end.x - init.x));
-
-        if (Math.abs((centerFace.y - faceRadius) - (end.y - centerFace.y - faceRadius)) > 250) {
-            end.y -= 120;
+        int diff = (int) Math.abs((centerFace.y - faceRadius) - (end.y - centerFace.y - faceRadius));
+        if (diff > 250 && faceCount == 1) {
+            end.y -= diff/1.8;
         }
 
 
