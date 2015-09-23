@@ -14,13 +14,17 @@ import android.widget.SeekBar;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
 
-import cat.lafosca.facecropper.FaceCropper;
+import cat.lafosca.facecropper.FaceCropper2;
 
 public class MainActivity extends ActionBarActivity {
 
     private String[] sampleImages =
 
-            {
+            {"http://assets1.introme.com/volo_photo/static/images/uploads/profile/768x768/ad8034af19f5bc3f9675ff61205740bfceca71dbe1286b495847e3ef.jpeg",
+                    "http://assets3.introme.com/volo_photo/static/images/uploads/profile/768x511/6a08664045b1d19a92fa6ea6831c10095136e9063ef0d6bd3d3249bf.jpeg",
+                    "http://assets2.introme.com/volo_photo/static/images/uploads/profile/768x766/398b71fa867915dba235ccb245f11776cb6f6ff172ab2c3b91964cd1.jpeg",
+                    "http://assets5.introme.com/volo_photo/static/images/uploads/profile/768x758/96c2bcb11399ee02f5ee7b2550ee3b0e3339b3ddad0e39e1fce6f9c0.jpg",
+                    "http://assets2.introme.com/volo_photo/static/images/uploads/profile/768x768/87a67d34c4b47ea3c43686e998d49e7631af057695a35ac722b4aebd.jpeg",
                     "http://assets4.introme.com/volo_photo/static/images/uploads/profile/768x1152/fb_a93f8aaf02dd51066a370829220daa41b652148afda72dc7f19cdf7f.jpeg",
                     "http://assets4.introme.com/volo_photo/static/images/uploads/profile/768x768/b03c35d2331a44da7ec88703bd74c06ed1e33c54048569d51060a2d0.jpeg",
                     "http://assets1.introme.com/volo_photo/static/images/uploads/profile/768x1362/6f2d5a878f65685ddf2dc4e00d1d980cc933fbd03afa14e035c1e288.jpeg",
@@ -52,7 +56,7 @@ public class MainActivity extends ActionBarActivity {
             };
 
     private Picasso mPicasso;
-    private FaceCropper mFaceCropper;
+    private FaceCropper2 mFaceCropper;
     private ViewPager mViewPager;
 
     private Transformation mCropTransformation = new Transformation() {
@@ -70,10 +74,10 @@ public class MainActivity extends ActionBarActivity {
             builder.append("minSize=").append(mFaceCropper.getFaceMinSize());
             builder.append(",maxFaces=").append(mFaceCropper.getMaxFaces());
 
-            FaceCropper.SizeMode mode = mFaceCropper.getSizeMode();
-            if (FaceCropper.SizeMode.EyeDistanceFactorMargin.equals(mode)) {
+            FaceCropper2.SizeMode mode = mFaceCropper.getSizeMode();
+            if (FaceCropper2.SizeMode.EyeDistanceFactorMargin.equals(mode)) {
                 builder.append(",distFactor=").append(mFaceCropper.getEyeDistanceFactorMargin());
-            } else if (FaceCropper.SizeMode.FaceMarginPx.equals(mode)) {
+            } else if (FaceCropper2.SizeMode.FaceMarginPx.equals(mode)) {
                 builder.append(",margin=").append(mFaceCropper.getFaceMarginPx());
             }
 
@@ -96,10 +100,10 @@ public class MainActivity extends ActionBarActivity {
             builder.append("minSize=").append(mFaceCropper.getFaceMinSize());
             builder.append(",maxFaces=").append(mFaceCropper.getMaxFaces());
 
-            FaceCropper.SizeMode mode = mFaceCropper.getSizeMode();
-            if (FaceCropper.SizeMode.EyeDistanceFactorMargin.equals(mode)) {
+            FaceCropper2.SizeMode mode = mFaceCropper.getSizeMode();
+            if (FaceCropper2.SizeMode.EyeDistanceFactorMargin.equals(mode)) {
                 builder.append(",distFactor=").append(mFaceCropper.getEyeDistanceFactorMargin());
-            } else if (FaceCropper.SizeMode.FaceMarginPx.equals(mode)) {
+            } else if (FaceCropper2.SizeMode.FaceMarginPx.equals(mode)) {
                 builder.append(",margin=").append(mFaceCropper.getFaceMarginPx());
             }
 
@@ -112,7 +116,7 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mFaceCropper = new FaceCropper(1f);
+        mFaceCropper = new FaceCropper2(getApplicationContext(), 1f);
         mFaceCropper.setFaceMinSize(0);
         mFaceCropper.setDebug(true);
         mPicasso = Picasso.with(this);
@@ -186,8 +190,6 @@ public class MainActivity extends ActionBarActivity {
             if (v == null) return;
             ImageView image = (ImageView) v.findViewById(R.id.imageView);
             ImageView imageCropped = (ImageView) v.findViewById(R.id.imageViewCropped);
-
-            Log.d("", "ImageView height:" + imageCropped.getHeight() + " Width:" + imageCropped.getWidth());
 
             mPicasso.load(sampleImages[position]).transform(mDebugCropTransformation).into(image);
 

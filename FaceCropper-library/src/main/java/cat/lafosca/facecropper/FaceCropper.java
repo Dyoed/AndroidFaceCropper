@@ -132,7 +132,6 @@ public class FaceCropper {
         if (fixedBitmap != mutableBitmap) {
             fixedBitmap.recycle();
         }
-
         FaceDetector faceDetector = new FaceDetector(
                 mutableBitmap.getWidth(), mutableBitmap.getHeight(),
                 mMaxFaces);
@@ -172,6 +171,9 @@ public class FaceCropper {
             Log.d("Confidence",face.confidence()+"");
             if((faceSize < 120 && face.confidence() <=0.5071299f) || (lastFaceSize > faceSize)){
                 faceCount--;
+                if (faceCount == 0) {
+                    return new CropResult(mutableBitmap);
+                }
                 continue;
             }
 
