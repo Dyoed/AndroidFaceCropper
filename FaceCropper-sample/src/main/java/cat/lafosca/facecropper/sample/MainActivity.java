@@ -5,19 +5,20 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 
+import com.google.android.gms.vision.face.FaceDetector;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
 
-import cat.lafosca.facecropper.FaceCropper2;
+import cat.lafosca.facecropper.FaceCropper;
+import cat.lafosca.facecropper.GoogleFaceCropper;
 
 public class MainActivity extends ActionBarActivity {
-
+    FaceDetector faceDetector;
     private String[] sampleImages =
 
             {"http://assets1.introme.com/volo_photo/static/images/uploads/profile/768x768/ad8034af19f5bc3f9675ff61205740bfceca71dbe1286b495847e3ef.jpeg",
@@ -56,14 +57,23 @@ public class MainActivity extends ActionBarActivity {
             };
 
     private Picasso mPicasso;
-    private FaceCropper2 mFaceCropper;
+    private FaceCropper mFaceCropper;
+    private GoogleFaceCropper mGoogleFaceCropper;
     private ViewPager mViewPager;
 
     private Transformation mCropTransformation = new Transformation() {
 
         @Override
         public Bitmap transform(Bitmap source) {
-            return mFaceCropper.getCroppedImage(source);
+
+
+            if(faceDetector.isOperational()){
+                return mGoogleFaceCropper.getCroppedImage(source);
+            }
+            else{
+                return mFaceCropper.getCroppedImage(source);
+            }
+
         }
 
         @Override
@@ -74,10 +84,10 @@ public class MainActivity extends ActionBarActivity {
             builder.append("minSize=").append(mFaceCropper.getFaceMinSize());
             builder.append(",maxFaces=").append(mFaceCropper.getMaxFaces());
 
-            FaceCropper2.SizeMode mode = mFaceCropper.getSizeMode();
-            if (FaceCropper2.SizeMode.EyeDistanceFactorMargin.equals(mode)) {
+            FaceCropper.SizeMode mode = mFaceCropper.getSizeMode();
+            if (FaceCropper.SizeMode.EyeDistanceFactorMargin.equals(mode)) {
                 builder.append(",distFactor=").append(mFaceCropper.getEyeDistanceFactorMargin());
-            } else if (FaceCropper2.SizeMode.FaceMarginPx.equals(mode)) {
+            } else if (FaceCropper.SizeMode.FaceMarginPx.equals(mode)) {
                 builder.append(",margin=").append(mFaceCropper.getFaceMarginPx());
             }
 
@@ -89,7 +99,13 @@ public class MainActivity extends ActionBarActivity {
 
         @Override
         public Bitmap transform(Bitmap source) {
-            return mFaceCropper.getFullDebugImage(source);
+
+            if(faceDetector.isOperational()){
+                return mGoogleFaceCropper.getFullDebugImage(source);
+            }
+            else{
+                return mFaceCropper.getFullDebugImage(source);
+            }
         }
 
         @Override
@@ -100,10 +116,10 @@ public class MainActivity extends ActionBarActivity {
             builder.append("minSize=").append(mFaceCropper.getFaceMinSize());
             builder.append(",maxFaces=").append(mFaceCropper.getMaxFaces());
 
-            FaceCropper2.SizeMode mode = mFaceCropper.getSizeMode();
-            if (FaceCropper2.SizeMode.EyeDistanceFactorMargin.equals(mode)) {
+            FaceCropper.SizeMode mode = mFaceCropper.getSizeMode();
+            if (GoogleFaceCropper.SizeMode.EyeDistanceFactorMargin.equals(mode)) {
                 builder.append(",distFactor=").append(mFaceCropper.getEyeDistanceFactorMargin());
-            } else if (FaceCropper2.SizeMode.FaceMarginPx.equals(mode)) {
+            } else if (GoogleFaceCropper.SizeMode.FaceMarginPx.equals(mode)) {
                 builder.append(",margin=").append(mFaceCropper.getFaceMarginPx());
             }
 
@@ -116,7 +132,10 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mFaceCropper = new FaceCropper2(getApplicationContext(), 1f);
+        faceDetector  = new FaceDetector.Builder(getApplicationContext()).setClassificationType(FaceDetector.ALL_CLASSIFICATIONS).setTrackingEnabled(false).build();
+
+        mFaceCropper = new FaceCropper(1f);
+        mGoogleFaceCropper = new GoogleFaceCropper(faceDetector);
         mFaceCropper.setFaceMinSize(0);
         mFaceCropper.setDebug(true);
         mPicasso = Picasso.with(this);
